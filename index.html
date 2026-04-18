@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biblioteca de Canais Dark</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080810;
+    --surface: #0f0f1a;
+    --surface2: #13131f;
+    --border: rgba(139,92,246,0.15);
+    --border2: rgba(139,92,246,0.3);
+    --accent: #8b5cf6;
+    --accent2: #6d28d9;
+    --accent-glow: rgba(139,92,246,0.2);
+    --text: #f0f0ff;
+    --text2: #9090b0;
+    --text3: #5050708;
+    --green: #4ade80;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Space Grotesk', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE TEXTURE ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* ── HERO ── */
+  #hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    overflow: hidden;
+  }
+
+  .hero-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+  }
+  .hero-orb-1 {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(109,40,217,0.25) 0%, transparent 70%);
+    top: -100px; left: 50%;
+    transform: translateX(-50%);
+    animation: pulse 6s ease-in-out infinite;
+  }
+  .hero-orb-2 {
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(139,92,246,0.12) 0%, transparent 70%);
+    bottom: 100px; right: -80px;
+    animation: pulse 8s ease-in-out infinite reverse;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: translateX(-50%) scale(1); opacity: 1; }
+    50% { transform: translateX(-50%) scale(1.1); opacity: 0.7; }
+  }
+  .hero-orb-2 { animation: pulse2 8s ease-in-out infinite reverse; }
+  @keyframes pulse2 {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.15); opacity: 0.6; }
+  }
+
+  .hero-content { position: relative; z-index: 1; max-width: 640px; }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(139,92,246,0.1);
+    border: 1px solid rgba(139,92,246,0.3);
+    color: #c4b5fd;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 100px;
+    margin-bottom: 2rem;
+    animation: fadeUp 0.6s ease both;
+  }
+  .badge-dot {
+    width: 6px; height: 6px;
+    background: #8b5cf6;
+    border-radius: 50%;
+    animation: blink 2s ease-in-out infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  .hero h1 {
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -2px;
+    color: var(--text);
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+  .hero h1 em {
+    font-style: normal;
+    background: linear-gradient(135deg, #a78bfa, #7c3aed);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero p {
+    font-size: 1.05rem;
+    color: var(--text2);
+    line-height: 1.7;
+    max-width: 480px;
+    margin: 0 auto 2.5rem;
+    animation: fadeUp 0.6s 0.2s ease both;
+    font-weight: 300;
+  }
+
+  .hero-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--accent);
+    color: #fff;
+    padding: 14px 32px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s;
+    animation: fadeUp 0.6s 0.3s ease both;
+    letter-spacing: 0.3px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-cta::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .hero-cta:hover { background: var(--accent2); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(139,92,246,0.4); }
+  .hero-cta:hover::before { opacity: 1; }
+
+  .hero-stats {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    margin-top: 3rem;
+    animation: fadeUp 0.6s 0.4s ease both;
+  }
+  .stat { text-align: center; }
+  .stat-num { font-size: 1.5rem; font-weight: 700; color: var(--text); }
+  .stat-label { font-size: 11px; color: var(--text2); letter-spacing: 1px; text-transform: uppercase; margin-top: 2px; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── LIBRARY ── */
+  #library {
+    display: none;
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+  }
+
+  .lib-header {
+    padding: 2rem 2rem 0;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: rgba(8,8,16,0.92);
+    backdrop-filter: blur(20px);
+    z-index: 10;
+  }
+
+  .lib-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .lib-logo {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.5px;
+  }
+  .lib-logo span { color: var(--accent); }
+
+  .channel-count {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text2);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 4px 12px;
+    border-radius: 6px;
+  }
+
+  .filters {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding-bottom: 1.25rem;
+    overflow-x: auto;
+  }
+  .filter-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text2);
+    padding: 6px 18px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: var(--sans);
+    transition: all 0.2s;
+    white-space: nowrap;
+    letter-spacing: 0.3px;
+  }
+  .filter-btn:hover { border-color: var(--border2); color: var(--text); }
+  .filter-btn.active {
+    background: rgba(139,92,246,0.15);
+    border-color: var(--accent);
+    color: #c4b5fd;
+  }
+
+  /* ── GRID ── */
+  .grid-wrapper { padding: 2rem; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.25rem;
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    animation: fadeUp 0.4s ease both;
+  }
+  .card:hover {
+    border-color: rgba(139,92,246,0.4);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(139,92,246,0.12);
+  }
+
+  .card-top {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 1.25rem 1.25rem 1rem;
+  }
+
+  .avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 2px solid rgba(139,92,246,0.3);
+    background: var(--surface2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .avatar-fallback {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--accent);
+    font-family: var(--mono);
+  }
+
+  .card-meta { flex: 1; min-width: 0; }
+  .card-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    letter-spacing: -0.3px;
+  }
+  .card-niche {
+    font-size: 11px;
+    color: #c4b5fd;
+    margin-top: 3px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  .yt-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: var(--text2);
+    font-size: 11px;
+    padding: 5px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-family: var(--sans);
+    transition: all 0.2s;
+    white-space: nowrap;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .yt-btn:hover { background: rgba(255,0,0,0.1); border-color: rgba(255,0,0,0.3); color: #ff6b6b; }
+
+  .yt-icon { font-size: 12px; }
+
+  /* ── PROMPTS TABS ── */
+  .prompts-area { padding: 0 1.25rem 1.25rem; }
+
+  .prompt-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 10px;
+    background: var(--surface2);
+    border-radius: 8px;
+    padding: 4px;
+  }
+  .prompt-tab {
+    flex: 1;
+    padding: 6px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text2);
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    font-family: var(--sans);
+    transition: all 0.2s;
+    text-align: center;
+    letter-spacing: 0.3px;
+  }
+  .prompt-tab.active { background: rgba(139,92,246,0.2); color: #c4b5fd; }
+
+  .prompt-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text2);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .prompt-label::before {
+    content: '';
+    width: 3px; height: 3px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+
+  .prompt-box {
+    background: #050508;
+    border: 1px solid rgba(139,92,246,0.1);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 12px;
+    color: #8888aa;
+    font-family: var(--mono);
+    line-height: 1.6;
+    max-height: 100px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(139,92,246,0.3) transparent;
+  }
+  .prompt-box::-webkit-scrollbar { width: 4px; }
+  .prompt-box::-webkit-scrollbar-track { background: transparent; }
+  .prompt-box::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.3); border-radius: 2px; }
+
+  .copy-btn {
+    width: 100%;
+    margin-top: 10px;
+    background: transparent;
+    border: 1px solid rgba(139,92,246,0.25);
+    color: #a78bfa;
+    padding: 9px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: var(--sans);
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    letter-spacing: 0.3px;
+  }
+  .copy-btn:hover { background: rgba(139,92,246,0.12); border-color: var(--accent); }
+  .copy-btn.copied { border-color: var(--green); color: var(--green); background: rgba(74,222,128,0.06); }
+
+  /* ── EMPTY STATE ── */
+  .empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text2);
+    font-size: 0.95rem;
+  }
+  .empty-icon { font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.5; }
+
+  /* ── FOOTER ── */
+  .footer {
+    text-align: center;
+    padding: 2rem;
+    border-top: 1px solid var(--border);
+    color: var(--text2);
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    margin-top: 2rem;
+  }
+  .footer span { color: var(--accent); }
+
+  /* ── BACK BTN ── */
+  .back-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text2);
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: var(--sans);
+    transition: all 0.2s;
+  }
+  .back-btn:hover { border-color: var(--border2); color: var(--text); }
+
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 2.2rem; letter-spacing: -1.5px; }
+    .grid { grid-template-columns: 1fr; }
+    .lib-top { flex-direction: column; align-items: flex-start; }
+    .hero-stats { gap: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════ HERO ══════════════ -->
+<section id="hero">
+  <div class="hero-orb hero-orb-1"></div>
+  <div class="hero-orb hero-orb-2"></div>
+
+  <div class="hero-content">
+    <div class="badge">
+      <span class="badge-dot"></span>
+      Acesso exclusivo
+    </div>
+
+    <h1>Biblioteca de<br><em>Canais Dark</em></h1>
+
+    <p>Canais que estão explodindo no YouTube — com os prompts prontos para você modelar cada estratégia e replicar o sucesso.</p>
+
+    <button class="hero-cta" onclick="openLibrary()">
+      Acessar a biblioteca
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-num" id="statChannels">1</div>
+        <div class="stat-label">Canais</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">2+</div>
+        <div class="stat-label">Prompts por canal</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">∞</div>
+        <div class="stat-label">Ideias geradas</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ LIBRARY ══════════════ -->
+<section id="library">
+  <div class="lib-header">
+    <div class="lib-top">
+      <div class="lib-logo">Biblioteca <span>Dark</span></div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span class="channel-count" id="countDisplay">1 canal</span>
+        <button class="back-btn" onclick="backToHero()">← Voltar</button>
+      </div>
+    </div>
+    <div class="filters" id="filterBar">
+      <button class="filter-btn active" onclick="filterCards('todos', this)">Todos</button>
+      <button class="filter-btn" onclick="filterCards('finanças', this)">Finanças</button>
+    </div>
+  </div>
+
+  <div class="grid-wrapper">
+    <div class="grid" id="cardsGrid"></div>
+  </div>
+
+  <div class="footer">
+    Biblioteca de Canais Dark &mdash; Atualizada regularmente &mdash; <span>Acesso exclusivo</span>
+  </div>
+</section>
+
+<script>
+const CHANNELS = [
+  {
+    id: 1,
+    name: "Alicia Invests",
+    url: "https://www.youtube.com/@AliciaInvestsUS",
+    niche: "finanças",
+    nicheLabel: "Finanças",
+    avatar: "https://yt3.googleusercontent.com/ytc/AIdro_n7gQvYdFrXJMoOXHCXzTCzqfq6VPkAc6GRrN_RrQ=s88-c-k-c0x00ffffff-no-rj",
+    prompts: [
+      {
+        label: "Ideias & Roteiro",
+        text: `Atue como um estrategista de conteúdo para YouTube especializado em educação financeira e desenvolvimento pessoal. Crie 5 ideias de vídeos no estilo 'Motion Graphics Educativo'. O foco deve ser a lacuna entre o conhecimento e a ação. Use metáforas visuais (ex: pontes, balanças, árvores crescendo). Para cada ideia, forneça: 1) Um título clicável, 2) O conflito principal do espectador, 3) Uma lista de 5 hábitos práticos/passos.`
+      },
+      {
+        label: "Imagens IA",
+        text: `2D vector illustration of a professional Black woman in a navy blue business suit, clean thick black outlines, flat design style, simple shading, expressive face, white background. Corporate Memphis style but more detailed and character-driven. High quality, minimalist, sticker style.\n\n---\n\n2D flat vector illustration of a bar chart showing exponential growth, floating gold coins around the bars, clean thick black outlines, vibrant colors (green and gold), professional educational infographic style. Minimalist composition, isolated on white background.\n\n---\n\n2D vector illustration, rear view of a woman sitting at a desk with three computer monitors, icons of books, magnifying glasses and lightbulbs floating above her head. Clean black outlines, flat design, modern workspace, professional blue and gray color palette.`
+      }
+    ]
+  }
+  // ← ADICIONE MAIS CANAIS AQUI
+];
+
+let activePromptTab = {};
+
+function openLibrary() {
+  document.getElementById('hero').style.display = 'none';
+  document.getElementById('library').style.display = 'block';
+  renderCards(CHANNELS);
+  document.getElementById('statChannels').textContent = CHANNELS.length;
+}
+
+function backToHero() {
+  document.getElementById('library').style.display = 'none';
+  document.getElementById('hero').style.display = 'flex';
+}
+
+function renderCards(channels) {
+  const grid = document.getElementById('cardsGrid');
+  document.getElementById('countDisplay').textContent =
+    channels.length === 1 ? '1 canal' : channels.length + ' canais';
+
+  if (channels.length === 0) {
+    grid.innerHTML = `<div class="empty"><div class="empty-icon">◎</div>Nenhum canal neste nicho ainda.</div>`;
+    return;
+  }
+
+  grid.innerHTML = channels.map((ch, i) => {
+    const tab = activePromptTab[ch.id] ?? 0;
+    const prompt = ch.prompts[tab];
+    const tabs = ch.prompts.map((p, ti) =>
+      `<button class="prompt-tab ${ti === tab ? 'active' : ''}"
+        onclick="switchTab(${ch.id}, ${ti})">${p.label}</button>`
+    ).join('');
+
+    const avatarHtml = ch.avatar
+      ? `<img src="${ch.avatar}" alt="${ch.name}" onerror="this.parentElement.innerHTML='<span class=\\'avatar-fallback\\'>${ch.name[0]}</span>'">`
+      : `<span class="avatar-fallback">${ch.name[0]}</span>`;
+
+    return `
+    <div class="card" id="card-${ch.id}" style="animation-delay:${i * 0.06}s">
+      <div class="card-top">
+        <div class="avatar">${avatarHtml}</div>
+        <div class="card-meta">
+          <div class="card-name">${ch.name}</div>
+          <div class="card-niche">${ch.nicheLabel}</div>
+        </div>
+        <a class="yt-btn" href="${ch.url}" target="_blank">
+          <span class="yt-icon">▶</span> YouTube
+        </a>
+      </div>
+      <div class="prompts-area">
+        ${ch.prompts.length > 1 ? `<div class="prompt-tabs">${tabs}</div>` : ''}
+        <div class="prompt-label">${prompt.label}</div>
+        <div class="prompt-box" id="pbox-${ch.id}">${prompt.text.replace(/\n/g,'<br>')}</div>
+        <button class="copy-btn" id="cbtn-${ch.id}" onclick="copyPrompt(${ch.id})">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="4" y="4" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M2 9V2.5A.5.5 0 012.5 2H9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+          Copiar prompt
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function switchTab(channelId, tabIndex) {
+  activePromptTab[channelId] = tabIndex;
+  const ch = CHANNELS.find(c => c.id === channelId);
+  const prompt = ch.prompts[tabIndex];
+
+  document.getElementById('pbox-' + channelId).innerHTML =
+    prompt.text.replace(/\n/g,'<br>');
+
+  const card = document.getElementById('card-' + channelId);
+  card.querySelectorAll('.prompt-tab').forEach((btn, i) => {
+    btn.classList.toggle('active', i === tabIndex);
+  });
+  card.querySelector('.prompt-label').textContent = prompt.label;
+
+  const cbtn = document.getElementById('cbtn-' + channelId);
+  cbtn.textContent = '';
+  cbtn.className = 'copy-btn';
+
+  const icon = document.createElementNS('http://www.w3.org/2000/svg','svg');
+  icon.setAttribute('width','13'); icon.setAttribute('height','13');
+  icon.setAttribute('viewBox','0 0 13 13'); icon.setAttribute('fill','none');
+  icon.innerHTML = '<rect x="4" y="4" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M2 9V2.5A.5.5 0 012.5 2H9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>';
+  cbtn.appendChild(icon);
+  cbtn.appendChild(document.createTextNode(' Copiar prompt'));
+  cbtn.onclick = () => copyPrompt(channelId);
+}
+
+function copyPrompt(channelId) {
+  const ch = CHANNELS.find(c => c.id === channelId);
+  const tab = activePromptTab[channelId] ?? 0;
+  const text = ch.prompts[tab].text;
+  navigator.clipboard.writeText(text).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+  });
+  const btn = document.getElementById('cbtn-' + channelId);
+  btn.innerHTML = '✓ Copiado!';
+  btn.classList.add('copied');
+  setTimeout(() => {
+    btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="4" y="4" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M2 9V2.5A.5.5 0 012.5 2H9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg> Copiar prompt';
+    btn.classList.remove('copied');
+  }, 2000);
+}
+
+function filterCards(niche, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const filtered = niche === 'todos' ? CHANNELS : CHANNELS.filter(c => c.niche === niche);
+  renderCards(filtered);
+}
+</script>
+</body>
+</html>
